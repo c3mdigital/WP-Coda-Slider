@@ -323,31 +323,16 @@
 						break;
 					case 'taxonomy_select':
 						echo '<select name="', $field[ 'id' ], '" id="', $field[ 'id' ], '">';
-						$names = wp_get_object_terms ( $post->ID, $field[ 'taxonomy' ] );
+						// $names = wp_get_object_terms ( $post->ID, $field[ 'taxonomy' ] );
 						$terms = get_terms ( $field[ 'taxonomy' ], 'hide_empty=0' );
 						foreach ( $terms as $term ) {
-							if ( ! is_wp_error ( $names ) && ! empty( $names ) && ! strcmp ( $term->slug, $names[ 0 ]->slug ) ) {
-								echo '<option value="' . $term->slug . '" selected>' . $term->name . '</option>';
-							} else {
-								echo '<option value="' . $term->slug . '  ', $meta == $term->slug ? $meta : ' ', '  ">' . $term->name . '</option>';
+							    echo '<option value="', $term->term_id, '"', $meta == $term->term_id ? ' selected="selected"' : '', '>', $term->slug, '</option>';
 							}
-						}
+
 						echo '</select>';
 						echo '<p class="cmb_metabox_description">', $field[ 'desc' ], '</p>';
 						break;
-					case 'taxonomy_radio':
-						$names = wp_get_object_terms ( $post->ID, $field[ 'taxonomy' ] );
-						$terms = get_terms ( $field[ 'taxonomy' ], 'hide_empty=0' );
-						echo '<ul>';
-						foreach ( $terms as $term ) {
-							if ( ! is_wp_error ( $names ) && ! empty( $names ) && ! strcmp ( $term->slug, $names[ 0 ]->slug ) ) {
-								echo '<li><input type="radio" name="', $field[ 'id' ], '" value="' . $term->slug . '" checked>' . $term->name . '</li>';
-							} else {
-								echo '<li><input type="radio" name="', $field[ 'id' ], '" value="' . $term->slug . '  ', $meta == $term->slug ? $meta : ' ', '  ">' . $term->name . '</li>';
-							}
-						}
-						echo '</ul>';
-						echo '<p class="cmb_metabox_description">', $field[ 'desc' ], '</p>';
+
 						break;
 					case 'taxonomy_multicheck':
 						echo '<ul>';
@@ -464,11 +449,11 @@
 				$old = get_post_meta ( $post_id, $name, ! $field[ 'multiple' ] /* If multicheck this can be multiple values */ );
 				$new = isset( $_POST[ $field[ 'id' ] ] ) ? $_POST[ $field[ 'id' ] ] : null;
 
-				if ( in_array ( $field[ 'type' ], array ( 'taxonomy_select', 'taxonomy_radio', 'taxonomy_multicheck' ) ) ) {
+				if ( in_array ( $field[ 'type' ], array ( 'taxonomy_radio', 'taxonomy_multicheck' ) ) ) {
 					$new = wp_set_object_terms ( $post_id, $new, $field[ 'taxonomy' ] );
 				}
 
-				if ( ( $field[ 'type' ] == 'textarea' ) || ( $field[ 'type' ] == 'textarea_small' ) ) {
+				if ( ( $field[ 'type' ] == 'textarea' ) || ( $field[ 'type' ] == 'textarea_small' ) || ( $field['type'] == 'taxonomy_select' ) ) {
 					$new = htmlspecialchars ( $new );
 				}
 
