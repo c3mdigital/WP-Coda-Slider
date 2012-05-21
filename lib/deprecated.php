@@ -1,16 +1,16 @@
 <?php
-	/**
-	 * Deprecated functions from past WP Coda Slider versions. You shouldn't use these
-	 * functions and look for the alternatives instead. The functions will be
-	 * removed in a later version.
-	 *
-	 * @package WP Coda Slider
-	 * @subpackage Deprecated
-	 */
+/**
+ * Deprecated functions from past WP Coda Slider versions. You shouldn't use these
+ * functions and look for the alternatives instead. The functions will be
+ * removed in a later version.
+ *
+ * @package WP Coda Slider
+ * @subpackage Deprecated
+ */
 
-	/*
-* Deprecated functions come here to die.
-*/
+/**
+ * Deprecated functions come here to die.
+ */
 
 
 	/**
