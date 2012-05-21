@@ -6,14 +6,15 @@ Plugin URI: http://c3mdigital.com/wp-coda-slider/
 Description: Add a jQuery Coda slider to any WordPress post or page
 Author: c3mdigital
 Author URI: http://c3mdigital.com/
-Version: 0.3.2
+Version: 0.3.3.3
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
 
-	add_filter( 'cmb_meta_boxes', 'coda_slider_meta_boxes' );
+    add_filter( 'cmb_meta_boxes', 'coda_slider_meta_boxes' );
 	add_action( 'init', 'c3m_initialize_meta_boxes', 9999 );
 	add_action( 'wp_enqueue_scripts', 'c3m_coda_scripts' );
+	add_filter( 'the_content', 'c3m_slider_show' );
 
 	/**
 	 * @return array
@@ -22,54 +23,73 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 	function coda_slider_meta_boxes() {
 		$prefix = '_c3m_';
 
-		$meta_boxes[] = array(
+		$meta_boxes[] = array (
 			'id' => 'slider_meta',
 			'title' => 'Create a coda slider for this post',
-			'pages' => array( 'page', 'post' ), // Post type
+			'pages' => array ( 'page', 'post' ), // Post type
 			'context' => 'normal',
 			'priority' => 'high',
 			'show_names' => true, // Show field names on the left
-			'fields' => array(
-				array(
+			'fields' => array (
+				array (
 					'name' => 'Unique Title',
 					'desc' => 'Give the slider a unique title ( used as div id)',
 					'id' => $prefix . 'title',
 					'type' => 'text_small',
 				),
-				array(
+				array (
 					'name' => 'Display slider:',
 					'id' => $prefix . 'display',
 					'type' => 'radio_inline',
-					'options' => array(
-						array( 'name' => 'Display Slider', 'value' => 'before', ),
-						array( 'name' => 'Don\'t Display on this page', 'value' => 'never', ),
+					'options' => array (
+						array ( 'name' => 'Display Slider', 'value' => 'before', ),
+						array ( 'name' => 'Don\'t Display on this page', 'value' => 'never', ),
 					),
 				),
-				array(
+				array (
+					'name' => 'Show Post:',
+					'id' => $prefix . 'content',
+					'type' => 'radio_inline',
+					'options' => array (
+						array ( 'name' => 'Content', 'value' => 'content', ),
+						array ( 'name' => 'Excerpt', 'value' => 'excerpt', ),
+					),
+				),
+				array (
+					'name' => 'Show Title:',
+					'id' => $prefix . 'show_title',
+					'type' => 'radio_inline',
+					'options' => array (
+						array ( 'name' => 'Yes', 'value' => 'yes', ),
+						array ( 'name' => 'No', 'value' => 'no', ),
+					),
+				),
+				array (
 					'name' => 'Category to get posts from',
 					'id' => $prefix . 'cat',
 					'type' => 'taxonomy_select',
-					'taxonomy' => 'category', // Taxonomy Slug
+					'taxonomy' => 'category',  // Taxonomy Slug
 				),
-				array(
+
+				array (
 					'name' => 'Number of posts to query',
 					'desc' => 'enter -1 for all posts in the category',
 					'id' => $prefix . 'show',
 					'type' => 'text_small',
 				),
 
-				array(
+				array (
 					'name' => 'CSS Options',
 					'id' => $prefix . 'test_title',
 					'type' => 'title',
 				),
-				array(
+				array (
 					'name' => 'CSS Width',
 					'desc' => 'How wide in px, em, or %',
 					'id' => $prefix . 'width',
 					'type' => 'text_small',
 				),
-				array(
+				array (
 					'name' => 'Tab background color',
 					'id' => $prefix . 'tab_bg',
 					'type' => 'colorpicker',
@@ -81,7 +101,7 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 					'type' => 'colorpicker',
 					'std' => '#000000'
 				),
-				array(
+				array (
 					'name' => 'Tab text color',
 					'id' => $prefix . 'tab_color',
 					'type' => 'colorpicker',
@@ -93,33 +113,33 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 					'type' => 'colorpicker',
 					'std' => '#ffffff'
 				),
-				array(
+				array (
 					'name' => 'Tab title font size',
 					'desc' => 'Enter value in px, em or %',
 					'id' => $prefix . 'tab_font',
 					'type' => 'text_small',
 				),
-				array(
+				array (
 					'name' => 'Custom CSS',
 					'desc' => 'Include any custom css',
 					'id' => $prefix . 'slider_css',
 					'type' => 'textarea_small',
 				),
-				array(
+				array (
 					'name' => 'Coda slider Options',
 					'id' => $prefix . 'slider_args',
 					'type' => 'title',
 				),
-				array(
+				array (
 					'name' => 'autoHeight',
 					'id' => $prefix . 'autoheight',
 					'type' => 'radio_inline',
 					'options' => array (
 						array ( 'name' => 'True', 'value' => 'true' ),
-						array ( 'name' => 'False', 'value' =>  'false', ),
+						array ( 'name' => 'False', 'value' => 'false', ),
 					),
 				),
-				array(
+				array (
 					'name' => 'autoSlide',
 					'id' => $prefix . 'autoslide',
 					'type' => 'radio_inline',
@@ -128,18 +148,18 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 						array ( 'name' => 'False', 'value' => 'false', ),
 					),
 				),
-				array(
+				array (
 					'name' => 'autoSlideInterval',
 					'id' => $prefix . 'slide_interval',
 					'type' => 'text_small',
 				),
-				array(
+				array (
 					'name' => 'autoSlideStopWhenClicked',
 					'id' => $prefix . 'stop_click',
 					'type' => 'radio_inline',
 					'options' => array (
-						array ( 'name' => 'True', 'value' => true, ),
-						array ( 'name' => 'False', 'value' => false, ),
+						array ( 'name' => 'True', 'value' => 'true', ),
+						array ( 'name' => 'False', 'value' =>  'false', ),
 					),
 				),
 				array (
@@ -151,7 +171,7 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 						array ( 'name' => 'False', 'value' => 'false', ),
 					),
 				),
-				array(
+				array (
 					'name' => 'dynamicTabsAlign',
 					'id' => $prefix . 'tab_align',
 					'type' => 'radio_inline',
@@ -161,27 +181,27 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 						array ( 'name' => 'Right', 'value' => 'right', ),
 					),
 				),
-				array(
+				array (
 					'name' => 'dynamicArrows',
 					'id' => $prefix . 'dynamicarrows',
 					'type' => 'radio_inline',
 					'options' => array (
-						array ( 'name' => 'True', 'value' => true, ),
-						array ( 'name' => 'False', 'value' => false, ),
+						array ( 'name' => 'True', 'value' => 'true', ),
+						array ( 'name' => 'False', 'value' => 'false', ),
 					),
 				),
-				array(
+				array (
 					'name' => 'Dynamic Arrows Left Text',
 					'id' => $prefix . 'left_text',
 					'type' => 'text_small',
 				),
-				array(
+				array (
 					'name' => 'Dynamic Arrows Right Text',
 					'id' => $prefix . 'right_text',
 					'type' => 'text_small',
 				),
 
-				array(
+				array (
 					'name' => 'EaseDuration',
 					'id' => $prefix . 'easeduration',
 					'type' => 'text_small',
@@ -237,8 +257,8 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 	 */
 
 	function c3m_initialize_meta_boxes() {
-		if ( ! class_exists( 'cmb_Meta_Box' ) )
-			require dirname( __FILE__ ) . '/lib/init.php';
+		if ( ! class_exists ( 'cmb_Meta_Box' ) )
+			require dirname ( __FILE__ ) . '/lib/init.php';
 
 	}
 
@@ -249,158 +269,182 @@ License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 	 * @return mixed
 	 */
 
-	function c3m_meta( $meta, $return = '', $post_id ='' ) {
+	function c3m_meta( $meta, $return = '', $post_id = '' ) {
 		if ( $return == '' ) $return = true;
-		if ( !$post_id ) $post_id = get_the_ID();
-		$val = get_post_meta( $post_id, $meta, true );
-		if ( true == $return ) return $val;
-		else echo $val;
+		if ( ! $post_id ) $post_id = get_the_ID ();
+		$val = get_post_meta ( $post_id, $meta, true );
+		if ( empty( $val ) ) {
+			$meta = NULL;
+		} else $meta = $val;
+		if ( true == $return ) return $meta;
+		else echo $meta;
 
 	}
-	add_filter( 'the_content', 'c3m_slider_show' );
+
 	/**
 	 * @param $content
 	 * @return string
 	 */
 	function c3m_slider_show( $content ) {
-		if ( c3m_meta ( '_c3m_display' ) == '' || c3m_meta ( '_c3m_display' ) == 'never' || !is_singular() )
+		if ( c3m_meta( '_c3m_display' ) == '' || c3m_meta ( '_c3m_display' ) == 'never' || ! is_singular () )
 			return $content;
 
-		$post_id = get_the_ID();
-		$cat = c3m_meta( '_c3m_cat' );
-		$show = c3m_meta( '_c3m_show' );
-		$display = c3m_meta( '_c3m_display' );
-		$autoheight = c3m_meta ( '_c3m_autoheight', $post_id );
-		$easeduration = c3m_meta ( '_c3m_easeduration', $post_id );
-		$easefunc = c3m_meta ( '_c3m_easefunc', $post_id );
-		$stop_click = c3m_meta ( '_c3m_stop_click' );
-		$tab_align = c3m_meta ( '_c3m_tab_align' );
-		$right_text = c3m_meta ( '_c3m_right_text' );
-		$left_text = c3m_meta ( '_c3m_left_text' );
-		$tabs = c3m_meta ( '_c3m_dyntabs' );
-		$arrows = c3m_meta ( '_c3m_dynamicarrows' );
-		$slide_int = c3m_meta ( '_c3m_slide_interval' );
-		$auto_slide = c3m_meta ( '_c3m_autoslide' );
-		$id = c3m_meta ( '_c3m_title', $post_id );
-		$tab_color = c3m_meta( '_c3m_tab_color' );
-		$tab_bg = c3m_meta ( '_c3m_tab_bg' );
-		$tab_active_bg = c3m_meta ( '_c3m_tab_active_bg' );
-		$tab_active_color = c3m_meta ( '_c3m_tab_active_color' );
-		$width = c3m_meta( '_c3m_width' );
-		$tab_font = c3m_meta( '_c3m_tab_font' );
+		$cat            = c3m_meta( '_c3m_cat' );
+		$show           = c3m_meta( '_c3m_show' );
+		$autoheight     = c3m_meta( '_c3m_autoheight' );
+		$easeduration   = c3m_meta( '_c3m_easeduration' );
+		$easefunc       = c3m_meta( '_c3m_easefunc' );
+		$stop_click     = c3m_meta( '_c3m_stop_click' );
+		$tab_align      = c3m_meta( '_c3m_tab_align' );
+		$right_text     = c3m_meta( '_c3m_right_text' );
+		$left_text      = c3m_meta( '_c3m_left_text' );
+		$tabs           = c3m_meta( '_c3m_dyntabs' );
+		$arrows         = c3m_meta( '_c3m_dynamicarrows' );
+		$slide_int      = c3m_meta( '_c3m_slide_interval' );
+		$auto_slide     = c3m_meta( '_c3m_autoslide' );
+		$id             = c3m_meta( '_c3m_title' );
+		$tab_color      = c3m_meta( '_c3m_tab_color' );
+		$tab_bg         = c3m_meta( '_c3m_tab_bg' );
+		$tab_active_bg  = c3m_meta( '_c3m_tab_active_bg' );
+		$tab_active_col = c3m_meta( '_c3m_tab_active_color' );
+		$width          = c3m_meta( '_c3m_width' );
+		$tab_font       = c3m_meta( '_c3m_tab_font' );
+		$slider_css     = c3m_meta( '_c3m_slider_css' );
+		$excerpt        = c3m_meta( '_c3m_content' );
+		$title          = c3m_meta( '_c3m_show_title' );
 
- 		$args = array(
-			'autoHeight' => "$autoheight",
-			'autoSlide' => "$auto_slide",
+		$args = array (
+			'autoHeight' => $autoheight,
+			'autoSlide' => $auto_slide,
 			'autoSlideInterval' => $slide_int,
 			'autoSlideStopWhenClicked' => $stop_click,
-			'dynamicArrows' => "$arrows",
+			'dynamicArrows' => $arrows,
 			'dynamicArrowLeftText' => $left_text,
 			'dynamicArrowRightText' => $right_text,
-			'dynamicTabs' => "$tabs",
-			'dynamicTabsAlign' => "$tab_align",
+			'dynamicTabs' => $tabs,
+			'dynamicTabsAlign' => $tab_align,
 			'slideEaseDuration' => $easeduration,
-			'slideEaseFunction' => "$easefunc"
+			'slideEaseFunction' => $easefunc
 
 		);
 
-		$defaults = array(
+		$defaults = array (
 			'autoHeight' => 'true',
-            'autoSlide' => 'false',
-            'autoSlideInterval' => '7000',
-            'autoSlideStopWhenClicked' => 'true',
-            'dynamicArrows' => 'true',
-            'dynamicArrowLeftText' => '"&#171; left"',
-            'dynamicArrowRightText' => '"right &#187;"',
-            'dynamicTabs' => 'true',
-            'dynamicTabsAlign' => '"center"',
-            'slideEaseDuration' => '1000',
-            'slideEaseFunction' => '"easeInOutExpo"'
+			'autoSlide' => 'false',
+			'autoSlideInterval' => '7000',
+			'autoSlideStopWhenClicked' => 'true',
+			'dynamicArrows' => 'true',
+			'dynamicArrowLeftText' => '&#171; left',
+			'dynamicArrowRightText' => 'right &#187;',
+			'dynamicTabs' => 'true',
+			'dynamicTabsAlign' => 'center',
+			'slideEaseDuration' => '1000',
+			'slideEaseFunction' => 'easeInOutExpo'
 		);
 
-		$args = wp_parse_args( $args, $defaults );
-		extract ( $args, EXTR_SKIP );
+		$autoHeight = empty( $args['autoHeight'] ) ? $defaults['autoHeight'] : $args['autoHeight'];
+		$autoSlide = empty( $args['autoSlide'] ) ? $defaults['autoSlide'] : $args['autoSlide'];
+		$autoSlideInterval = empty( $args['autoSlideInterval'] ) ? $defaults['autoSlideInterval'] : $args['autoSlideInterval'];
+		$autoSlideStopWhenClicked = empty( $args['autoSlideStopWhenClicked'] ) ? $defaults['autoSlideStopWhenClicked'] : $args['autoSlideStopWhenClicked'];
+		$dynamicArrows = empty( $args['dynamicArrows'] ) ? $defaults['dynamicArrows'] : $args['dynamicArrows'];
+		$dynamicArrowLeftText = empty( $args['dynamicArrowLeftText'] ) ? $defaults['dynamicArrowLeftText'] : $args['dynamicArrowLeftText'];
+		$dynamicArrowRightText = empty( $args['dynamicArrowRightText'] ) ? $defaults['dynamicArrowRightText'] : $args['dynamicArrowRightText'];
+		$dynamicTabs = empty( $args['dynamicTabs'] ) ? $defaults['dynamicTabs'] : $args['dynamicTabs'];
+		$dynamicTabsAlign = empty( $args['dynamicTabsAlign'] ) ? $defaults['dynamicTabsAlign'] : $args['dynamicTabsAlign'];
+		$slideEaseDuration = empty( $args['slideEaseDuration'] ) ? $defaults['slideEaseDuration'] : $args['slideEaseDuration'];
+		$slideEaseFunction = empty( $args['slideEaseFunction'] ) ? $defaults['slideEaseFunction'] : $args['slideEaseFunction'];
+
 		$content .= '<div class="coda-slider-wrapper">';
 		$content .= '<div class="coda-slider preload" id="' . $id . '">';
 		$args = array (
 			'post_type' => 'post',
 			'posts_per_page' => $show,
-			'cat__in' =>    $cat,
-			'post_not_in' => array( get_the_ID() )
+			'cat' => (int)$cat,
+			'post_not_in' => array ( get_the_ID () )
 		);
 
 		$loop = new WP_Query( $args );
-		while ( $loop->have_posts() ) { $loop->the_post();
-			$content .= '<div id="post-' . get_the_ID(). '" class="panel">';
+		while ( $loop->have_posts () ) : $loop->the_post ();
+			$content .= '<div id="post-' . get_the_ID () . '" class="panel">';
 			$content .= '<div class="panel-wrapper">';
-			$content .= '<h2 class="title">' . get_the_title(). '</h2>';
-			$content .=  get_the_content();
+			if ( $title == 'yes' ) {
+				$content .= '<h2 class="title">' . get_the_title () . '</h2>';
+			} else {
+				$content .= '<h2 class="title" style="display:none">' . get_the_title () . '</h2>';
+			}
+			if ( $excerpt == 'excerpt' ) {
+				$content .=  get_the_excerpt();
+			} else {
+				$content .= apply_filters ( 'the_content', get_the_content() );
+			}
 			$content .= '</div><!-- /panel-wrapper --> </div><!-- /panel -->';
 
-		}
-		wp_reset_query();
+		endwhile;
+		wp_reset_postdata ();
+
 		$content .= '</div><!-- /.coda-slider .preload -->';
 		$content .= '</div><!-- /coda-slider-wrapper -->';
 		$content .= '<script type="text/javascript" >
 				jQuery(document).ready(function($) {
-					$( "#'. $id .'" ) .codaSlider ({
-					        autoHeight:'                . $autoHeight.',
-							autoSlide:'                 . $autoSlide. ',
-							autoSlideInterval:'         . $autoSlideInterval.',
-							autoSlideStopWhenClicked:'  . $autoSlideStopWhenClicked.',
-							dynamicArrows:'             . $dynamicArrows .',
-							dynamicArrowLeftText:"'     . $dynamicArrowLeftText.'",
-							dynamicArrowRightText:"'    . $dynamicArrowRightText.'",
-							dynamicTabs:'               . $dynamicTabs.',
-							dynamicTabsAlign:"'         . $dynamicTabsAlign.'",
-							slideEaseDuration:'         . $slideEaseDuration.',
-							slideEaseFunction:"'        . $slideEaseFunction.'"
-							});
-				});
+					$( "#' . $id . '" ) .codaSlider ({
+						autoHeight:' . $autoHeight . ',
+						autoSlide:' . $autoSlide . ',
+						autoSlideInterval:' . $autoSlideInterval . ',
+						autoSlideStopWhenClicked:' . $autoSlideStopWhenClicked . ',
+						dynamicArrows:' . $dynamicArrows . ',
+						dynamicArrowLeftText:"' . $dynamicArrowLeftText . '",
+						dynamicArrowRightText:"' . $dynamicArrowRightText . '",
+						dynamicTabs:' . $dynamicTabs . ',
+						dynamicTabsAlign:"' . $dynamicTabsAlign . '",
+						slideEaseDuration:' . $slideEaseDuration . ',
+						slideEaseFunction:"' . $slideEaseFunction . '"
+					});
+
 					$(".coda-slider-wrapper").hover(function() {
 						$(".coda-nav-left, .coda-nav-right").fadeIn(600);
 					}, function() {
 						$(".coda-nav-left, .coda-nav-right").fadeOut(600);
+					});
 				});
 
 			</script>';
 		$content .= '<style type="text/css">
-					.coda-slider-wrapper { padding: 20px 0; direction:ltr; position: relative; }
+					.coda-slider-wrapper { padding: 20px 0; direction:ltr; }
 					.coda-slider { /*background:#a9a9a9;*/ /* put your background color here */ }
 					.coda-slider-no-js .coda-slider { height: 200px; overflow: auto !important; padding-right: 20px }
-					.coda-slider, .coda-slider .panel {width: '.$width.';}
-					.coda-slider-wrapper.arrows .coda-slider, .coda-slider-wrapper.arrows .coda-slider .panel {width: '.$width.';}
+					.coda-slider, .coda-slider .panel {width: ' . $width . ';}
+					.coda-slider-wrapper.arrows .coda-slider, .coda-slider-wrapper.arrows .coda-slider .panel {width: ' . $width . ';}
 					.coda-slider-wrapper.arrows .coda-slider { margin: 0 10px }
-					.coda-nav-left a, .coda-nav-right a { background: '.$tab_bg.'; color: '.$tab_color.'; padding: 3px; }
-					.coda-nav ul li a.current { background: '.$tab_active_bg.'; color: '.$tab_active_color.'; }
+					.coda-nav-left a, .coda-nav-right a { background: ' . $tab_bg . '; color: ' . $tab_color . '; padding: 3px; }
+					.coda-nav ul li a.current { background: ' . $tab_active_bg . '; color: ' . $tab_active_col . '; }
 					.coda-slider .panel-wrapper { padding: 20px }
 					.coda-slider p.loading { padding: 20px; text-align: center }
 					.coda-nav ul { clear: both; display: block; margin: auto; overflow: hidden }
 					.coda-nav ul li { display: inline }
-					.coda-nav ul li a { background: '.$tab_bg.'; color: '.$tab_color.'; display: block; float: left; margin-right: 1px; padding: 3px 6px; font-size: '.$tab_font.'; text-decoration: none }
+					.coda-nav ul li a { background: ' . $tab_bg . '; color: ' . $tab_color . '; display: block; float: left; margin-right: 1px; padding: 3px 6px; font-size: ' . $tab_font . '; text-decoration: none }
 					.coda-slider-wrapper { clear: both; overflow: hidden; }
 					.coda-slider { float: left; overflow: hidden; position: relative }
 					.coda-slider .panel { display: block; float: left }
 					.coda-slider .panel-container { position: relative }
-					.coda-nav-right { display:none; float: right; position: absolute; right: 0; top: 50%; }
-					.coda-nav-left { display:none; float: left; position: absolute; left: 0px; top: 50%; }
-					.coda-nav-left a, .coda-nav-right a { display: block; text-align: center; text-decoration: none }
+					.coda-nav-right { display:none; float: left;}
+					.coda-nav-left { display:none; float: left;  }
+					.coda-nav-left a, .coda-nav-right a { background: transparent; color: #000; text-align: center; text-decoration: none; width: auto; }
+					' . $slider_css . '
 					</style>';
 
 		return $content;
-
 	}
 
 	/**
 	 * @description outputs the javascript and css on the front end
 	 */
 	function c3m_coda_scripts() {
-		if ( is_singular() ) {
-		wp_enqueue_script( 'jquery.easing', WP_PLUGIN_URL . '/wp-coda-slider/js/jquery.easing.1.3.js', array ( 'jquery' ) );
-		wp_enqueue_script( 'coda_slider', WP_PLUGIN_URL . '/wp-coda-slider/js/coda.slider.js', array ( 'jquery.easing') );
-		wp_enqueue_style( 'coda_slider_css', WP_PLUGIN_URL . '/wp-coda-slider/css/coda-slider-2.0.1.css' );
-		wp_localize_script( 'coda_slider', 'Plugin_Url', array ( 'plugin_url' => WP_PLUGIN_URL . '/wp-coda-slider/images/' ) );
+		if ( is_singular () ) {
+			wp_enqueue_script( 'jquery.easing', WP_PLUGIN_URL . '/wp-coda-slider/js/jquery.easing.1.3.js', array ( 'jquery' ) );
+			wp_enqueue_script( 'coda_slider', WP_PLUGIN_URL . '/wp-coda-slider/js/coda.slider.js', array ( 'jquery.easing' ) );
+			wp_enqueue_style( 'coda_slider_css', WP_PLUGIN_URL . '/wp-coda-slider/css/coda-slider-2.0.1.css' );
+			wp_localize_script( 'coda_slider', 'Plugin_Url', array ( 'plugin_url' => WP_PLUGIN_URL . '/wp-coda-slider/images/' ) );
 		}
 	}
 
-	include_once dirname ( __FILE__ ) . '/lib/deprecated.php';
+	include_once dirname( __FILE__ ) . '/lib/deprecated.php';
