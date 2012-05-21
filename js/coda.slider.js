@@ -3,16 +3,16 @@
  Copyright (c) 2009 Niall Doherty
  This plugin available for use in all personal or commercial projects under both MIT and GPL licenses.
  */
-var $ = jQuery;
 
-$(function () {
+
+jQuery(function ($) {
     var plugin_path = Plugin_Url.plugin_url;
     // Remove the coda-slider-no-js class from the body
     $("body").removeClass("coda-slider-no-js");
     // Preloader
     $(".coda-slider").children('.panel').hide().end().prepend('<p class="loading">Loading...<br /><img src="' + plugin_path + '/ajax-loader.gif" alt="loading..." /></p>');
 });
-
+var $ = jQuery;
 var sliderCount = 1;
 
 $.fn.codaSlider = function (settings) {
@@ -25,7 +25,7 @@ $.fn.codaSlider = function (settings) {
         autoSlideInterval:7000,
         autoSlideStopWhenClicked:true,
         crossLinking:true,
-        dynamicArrows:true,
+        dynamicArrows:false,
         dynamicArrowLeftText:"&#171; left",
         dynamicArrowRightText:"right &#187;",
         dynamicTabs:true,
@@ -39,9 +39,6 @@ $.fn.codaSlider = function (settings) {
     }, settings);
 
     return this.each(function () {
-
-        // Uncomment the line below to test your preloader
-        // alert("Testing preloader");
 
         var slider = $(this);
 
@@ -137,8 +134,8 @@ $.fn.codaSlider = function (settings) {
                     slider.parent().prepend(dynamicTabs);
                     break;
             }
-            ;
-            ul = $('#coda-nav-' + sliderCount + ' ul');
+
+            var ul = $('#coda-nav-' + sliderCount + ' ul');
             // Create the nav items
             $('.panel', slider).each(function (n) {
                 ul.append('<li class="tabs tab' + (n + 1) + '"><a href="#' + (n + 1) + '">' + $(this).find(settings.panelTitleSelector).text() + '</a></li>');
@@ -153,10 +150,8 @@ $.fn.codaSlider = function (settings) {
                     ul.css({ float:'right' });
                     break;
             }
-            ;
-        }
-        ;
 
+        }
         // If we need a tabbed nav
         $('#coda-nav-' + sliderCount + ' a').each(function (z) {
             // What happens when a nav link is clicked
@@ -170,7 +165,6 @@ $.fn.codaSlider = function (settings) {
                 if (!settings.crossLinking) {
                     return false
                 }
-                ; // Don't change the URL hash unless cross-linking is specified
             });
         });
 
@@ -191,10 +185,8 @@ $.fn.codaSlider = function (settings) {
                     if (!settings.crossLinking) {
                         return false
                     }
-                    ; // Don't change the URL hash unless cross-linking is specified
                 });
             }
-            ;
         });
 
         // Specify which tab is initially set to "current". Depends on if the loaded URL had a hash or not (cross-linking).
@@ -207,14 +199,12 @@ $.fn.codaSlider = function (settings) {
         } else {
             $("#coda-nav-" + sliderCount + " a:eq(0)").addClass("current");
         }
-        ;
 
         // Set the height of the first panel
         if (settings.autoHeight) {
             panelHeight = $('.panel:eq(' + (currentPanel - 1) + ')', slider).height();
             slider.css({ height:panelHeight });
         }
-        ;
 
         // Trigger autoSlide
         if (settings.autoSlide) {
@@ -222,17 +212,13 @@ $.fn.codaSlider = function (settings) {
                 setTimeout(autoSlide, settings.autoSlideInterval);
             });
         }
-        ;
 
         function alterPanelHeight(x) {
             if (settings.autoHeight) {
                 panelHeight = $('.panel:eq(' + x + ')', slider).height()
                 slider.animate({ height:panelHeight }, settings.autoHeightEaseDuration, settings.autoHeightEaseFunction);
             }
-            ;
         }
-
-        ;
 
         function autoSlide() {
             if (navClicks == 0 || !settings.autoSlideStopWhenClicked) {
@@ -243,7 +229,6 @@ $.fn.codaSlider = function (settings) {
                     var offset = -(panelWidth * currentPanel);
                     currentPanel += 1;
                 }
-                ;
                 alterPanelHeight(currentPanel - 1);
                 // Switch the current tab:
                 slider.siblings('.coda-nav').find('a').removeClass('current').parents('ul').find('li:eq(' + (currentPanel - 1) + ') a').addClass('current');
@@ -251,13 +236,11 @@ $.fn.codaSlider = function (settings) {
                 $('.panel-container', slider).animate({ marginLeft:offset }, settings.slideEaseDuration, settings.slideEaseFunction);
                 setTimeout(autoSlide, settings.autoSlideInterval);
             }
-            ;
+
         }
 
-        ;
-
         // Kill the preloader
-        $('.panel', slider).show().end().find("p.loading").remove();
+        $('.panel', slider).show().end().find(" p.loading").remove();
         slider.removeClass("preload");
 
         sliderCount++;
